@@ -1,1 +1,1 @@
-# tinyapp
+# TINYAPP
