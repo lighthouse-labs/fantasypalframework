@@ -3,18 +3,18 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
+const bodyParser = require("body-parser");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+app.set("view engine", "ejs");
 
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 function generateRandomString() {
-  let r = (Math.random().toString(36).substring(6))
+  let r = (Math.random().toString(36).substring(7))
 return r;
 }
 
@@ -41,13 +41,13 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
+  console.log(req.params, "tiny app")
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL);
   res.redirect(longURL);
 });
 
