@@ -11,7 +11,9 @@
       </div>
     </div>
         <% if (username) { %>
-        <div class="">Hey <%= username %>!</div>
+          <form action="/logout" method="POST">
+        <div class="">Hey <%= username %>!  <button class="btn btn-primary-sm" type="submit" style="border-color: black;">Logout</button></div>
+      </form>
         <%} else { %>
      <form action="/login" method="POST">
       <div class="input-group input-group-sm"></div>
