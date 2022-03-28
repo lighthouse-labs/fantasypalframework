@@ -15,10 +15,19 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
-// Function that generates random strings
+// Functions
 function generateRandomString() {
   let r = (Math.random().toString(36).substring(7))
 return r;
+}
+
+function emailCheck(email) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //GET CALLS
@@ -61,9 +70,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 //POST CALLS
 app.post("/register", (req, res) => {
-  
-  let userID = generateRandomString();
-  users[userID] = {
+  if (req.body.email && req.body.password) {
+    if (!emailCheck(req.body.email)){
+      let userID = generateRandomString();
+    users[userID] = {
     userID,
     email: req.body.email,
     password: req.body.password,
@@ -71,7 +81,16 @@ app.post("/register", (req, res) => {
   res.cookie('user_id', userID)
   //test code console.log(users[userID])
   res.redirect('/urls')
-})
+    } else {
+      res.statusCode = 400;
+      res.send('<h2>400 Email already exists. Please try again.</h2>')
+    }
+  } else {
+    res.statusCode = 400;
+    res.send('<h2>400 Please try again.</h2>')
+  } 
+});
+
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
