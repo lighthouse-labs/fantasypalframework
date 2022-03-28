@@ -109,9 +109,19 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/login", (req,res) => {
   console.log(req.body);
-  res.cookie("user_id", req.body.username);
-  res.redirect("/urls");
-})
+  if (!emailCheck(req.body.email)) {
+    res.statusCode = 403;
+    res.send('<h2>403 This email is not registered. Please try again or resgister a new account!</h2>')
+  } else {
+    if (users[userID].password !== req.body.password) {
+      res.statusCode = 403;
+      res.send('<h2>403 You entered the wrong password, please try again.</h2>')
+    } else {
+      res.cookie("user_id", req.body.email);
+      res.redirect("/urls")
+    }
+  }
+});
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
