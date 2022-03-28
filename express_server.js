@@ -8,6 +8,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 const cookieParser = require("cookie-parser");
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dino"
+  }
+}
 
 //app.use lines
 app.use(bodyParser.urlencoded({extended: true}));
@@ -21,6 +28,12 @@ return r;
 }
 
 //GET CALLS
+app.get("/register", (req, res) => {
+  let templateVars = {username: req.cookies['username']};
+  res.render('user-registration', templateVars);
+})
+
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
