@@ -11,7 +11,6 @@
   </head>
 
   <body>
-
     <header>
       <nav class="navbar navbar-expand-md navbar-dark bg-success">
         <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -24,6 +23,10 @@
             <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
           </div>
         </div>
+        <form action="/login" method="POST" class="form-inline">
+          <input type="text" name="username" class="form-control" placeholder="Username" style="width: 190px">
+          <button type="submit" class="btn btn-primary" style="border-color: white; background-color: black; color: white;">Login</button>
+          </form>
       </nav>
     </header>
 
