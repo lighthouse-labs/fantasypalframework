@@ -31,6 +31,11 @@ function emailCheck(email) {
 }
 
 //GET CALLS
+app.get("/login", (req, res) => {
+  let templateVars = {user: users[req.cookies['user_id']]};
+  res.render('login', templateVars);
+})
+
 app.get("/register", (req, res) => {
   let templateVars = {user: users[req.cookies['user_id']]};
   res.render('user-registration', templateVars);
