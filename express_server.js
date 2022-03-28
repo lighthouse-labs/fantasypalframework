@@ -8,13 +8,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 const cookieParser = require("cookie-parser");
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dino"
-  }
-}
+const users = {}
 
 //app.use lines
 app.use(bodyParser.urlencoded({extended: true}));
@@ -29,7 +23,7 @@ return r;
 
 //GET CALLS
 app.get("/register", (req, res) => {
-  let templateVars = {username: req.cookies['username']};
+  let templateVars = {user: users[req.cookies['user_id']]};
   res.render('user-registration', templateVars);
 })
 
@@ -43,7 +37,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']] };
     res.render("urls_index", templateVars);
 });
 
@@ -52,12 +46,12 @@ app.get("/urls.json", (req, res) => {
 })
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  let templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']] };
   res.render('urls_new', templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies['username']};
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies['user_id']]};
   res.render("urls_show", templateVars);
 });
 
@@ -66,6 +60,19 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 //POST CALLS
+app.post("/register", (req, res) => {
+  
+  let userID = generateRandomString();
+  users[userID] = {
+    userID,
+    email: req.body.email,
+    password: req.body.password,
+  }
+  res.cookie('user_id', userID)
+  //test code console.log(users[userID])
+  res.redirect('/urls')
+})
+
 app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
@@ -78,12 +85,12 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/login", (req,res) => {
   console.log(req.body);
-  res.cookie("username", req.body.username);
+  res.cookie("user_id", req.body.username);
   res.redirect("/urls");
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("/urls");
 })
 
