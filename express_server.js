@@ -5,7 +5,13 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const urlDatabase = {};
 const cookieParser = require("cookie-parser");
-const users = {}
+const users = {
+  "userID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple"
+  }
+}
 
 //app.use lines
 app.use(bodyParser.urlencoded({extended: true}));
@@ -21,7 +27,7 @@ return r;
 function emailCheck(email) {
   for (const user in users) {
     if (users[user].email === email) {
-      return true;
+      return users[user];
     }
   }
   return false;
@@ -58,8 +64,12 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  console.log('this is the user', users)
+  res.cookie("check cookie", 112)
+  
   const userID = req.cookies['user_id'];
-  console.log(userID);
+
+  console.log(userID, "checking register cookie")
   const userUrls = urlsForUser(userID);
   let templateVars = { urls: userUrls, user: users[userID] };
   res.render("urls_index", templateVars);
@@ -89,15 +99,17 @@ app.get("/u/:shortURL", (req, res) => {
 
 //POST CALLS
 app.post("/register", (req, res) => {
+  console.log(req.body.password, 'this is the password')
   if (req.body.email && req.body.password) {
     if (!emailCheck(req.body.email)){
       let userID = generateRandomString();
     users[userID] = {
-    userID,
+    id: userID,
     email: req.body.email,
     password: req.body.password,
   }
-  res.cookie('user_id', userID)
+  res.cookie("user_id", userID)
+  console.log(userID, 'check user id')
   //test code console.log(users[userID])
   res.redirect('/urls')
     } else {
@@ -125,16 +137,22 @@ app.post("/urls/:shortURL", (req, res) => {
 })
 
 app.post("/login", (req,res) => {
-  console.log(req.body);
+  // const userID = req.cookies['user_id'];
+  // console.log(req.body);
+  // console.log(userID, "this is the userID")
   if (!emailCheck(req.body.email)) {
     res.statusCode = 403;
     res.send('<h2>403 This email is not registered. Please try again or resgister a new account!</h2>')
   } else {
-    if (users[user].password !== req.body.password) {
+    let user = emailCheck(req.body.email);
+    let userPassword = user && user.password;
+    let userID = user && user.id;
+    console.log(userPassword, "checking userPassword")
+    if (req.body.password !== userPassword) {
       res.statusCode = 403;
       res.send('<h2>403 You entered the wrong password, please try again.</h2>')
     } else {
-      res.cookie("user_id", req.body.email);
+      res.cookie("user_id", userID);
       res.redirect("/urls")
     }
   }
