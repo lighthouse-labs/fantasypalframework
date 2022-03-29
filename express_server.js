@@ -12,6 +12,7 @@ const users = {
     password: "purple"
   }
 }
+const bcrypt =require("bcryptjs"); 
 
 //app.use lines
 app.use(bodyParser.urlencoded({extended: true}));
@@ -106,7 +107,7 @@ app.post("/register", (req, res) => {
     users[userID] = {
     id: userID,
     email: req.body.email,
-    password: req.body.password,
+    password: bcrypt.hashSync(req.body.password, 10)
   }
   res.cookie("user_id", userID)
   console.log(userID, 'check user id')
@@ -148,7 +149,8 @@ app.post("/login", (req,res) => {
     let userPassword = user.password;
     let userID = user.id;
     console.log(userPassword, "checking userPassword")
-    if (req.body.password !== userPassword) {
+    const comparePassword = bcrypt.compareSync(req.body.password, userPassword);
+    if (!comparePassword) {
       res.statusCode = 403;
       res.send('<h2>403 You entered the wrong password, please try again.</h2>')
     } else {
