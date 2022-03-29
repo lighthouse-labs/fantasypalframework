@@ -145,8 +145,8 @@ app.post("/login", (req,res) => {
     res.send('<h2>403 This email is not registered. Please try again or resgister a new account!</h2>')
   } else {
     let user = emailCheck(req.body.email);
-    let userPassword = user && user.password;
-    let userID = user && user.id;
+    let userPassword = user.password;
+    let userID = user.id;
     console.log(userPassword, "checking userPassword")
     if (req.body.password !== userPassword) {
       res.statusCode = 403;
