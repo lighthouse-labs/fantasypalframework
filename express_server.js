@@ -4,7 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const urlDatabase = {};
-const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const users = {
   "userID": {
     id: "userRandomID",
@@ -12,11 +12,15 @@ const users = {
     password: "purple"
   }
 }
-const bcrypt =require("bcryptjs"); 
+const bcrypt =require("bcryptjs");
 
 //app.use lines
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession( {
+  name: 'session',
+  keys: ['lighthouse'],
+  secret: 'this is a secret'
+}));
 app.set("view engine", "ejs");
 
 // Functions
@@ -25,7 +29,7 @@ function generateRandomString() {
 return r;
 }
 
-function emailCheck(email) {
+function emailCheck(email, users) {
   for (const user in users) {
     if (users[user].email === email) {
       return users[user];
@@ -46,12 +50,12 @@ function urlsForUser(id) {
 
 //GET CALLS
 app.get("/login", (req, res) => {
-  let templateVars = {user: users[req.cookies['user_id']]};
+  let templateVars = {user: users[req.session.user_id]};
   res.render('login', templateVars);
 })
 
 app.get("/register", (req, res) => {
-  let templateVars = {user: users[req.cookies['user_id']]};
+  let templateVars = {user: users[req.session.user_id]};
   res.render('user-registration', templateVars);
 })
 
@@ -66,9 +70,9 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   console.log('this is the user', users)
-  res.cookie("check cookie", 112)
+  //res.cookie("check cookie", 112)
   
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
 
   console.log(userID, "checking register cookie")
   const userUrls = urlsForUser(userID);
@@ -81,8 +85,8 @@ app.get("/urls.json", (req, res) => {
 })
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']] };
-  if (!req.cookies['user_id']) {
+  let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+  if (!req.session.user_id) {
     res.redirect('/login');
   } else {
   res.render('urls_new', templateVars);
@@ -90,7 +94,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies['user_id']]};
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
   res.render("urls_show", templateVars);
 });
 
@@ -102,14 +106,15 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/register", (req, res) => {
   console.log(req.body.password, 'this is the password')
   if (req.body.email && req.body.password) {
-    if (!emailCheck(req.body.email)){
+    if (!emailCheck(req.body.email, users)){
       let userID = generateRandomString();
     users[userID] = {
     id: userID,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10)
   }
-  res.cookie("user_id", userID)
+  req.session.user_id = userID;
+  
   console.log(userID, 'check user id')
   //test code console.log(users[userID])
   res.redirect('/urls')
@@ -126,7 +131,7 @@ app.post("/register", (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.cookies['user_id'] === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
   }
   res.redirect('/urls');
@@ -141,27 +146,28 @@ app.post("/login", (req,res) => {
   // const userID = req.cookies['user_id'];
   // console.log(req.body);
   // console.log(userID, "this is the userID")
-  if (!emailCheck(req.body.email)) {
+  if (!emailCheck(req.body.email, users)) {
     res.statusCode = 403;
     res.send('<h2>403 This email is not registered. Please try again or resgister a new account!</h2>')
   } else {
-    let user = emailCheck(req.body.email);
+    let user = emailCheck(req.body.email, users);
     let userPassword = user.password;
     let userID = user.id;
     console.log(userPassword, "checking userPassword")
-    const comparePassword = bcrypt.compareSync(req.body.password, userPassword);
+    const comparePassword = bcrypt.compareSync(req.body.password, user.password);
     if (!comparePassword) {
       res.statusCode = 403;
-      res.send('<h2>403 You entered the wrong password, please try again.</h2>')
+      return res.send('<h2>403 You entered the wrong password, please try again.</h2>')
     } else {
-      res.cookie("user_id", userID);
+      req.session.user_id = userID;
       res.redirect("/urls")
     }
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  res.clearCookie('session');
+  res.clearCookie('session.sig');
   res.redirect("/urls");
 })
 
@@ -169,7 +175,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    userID: req.cookies['user_id']
+    userID: req.session.user_id
   }
   res.redirect(`/urls/${shortURL}`);
 });
