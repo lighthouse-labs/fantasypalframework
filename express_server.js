@@ -29,14 +29,8 @@ function generateRandomString() {
 return r;
 }
 
-function emailCheck(email, users) {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return false;
-}
+
+const { emailCheck } = require('./helpers');
 
 function urlsForUser(id) {
   const userUrls = {};
