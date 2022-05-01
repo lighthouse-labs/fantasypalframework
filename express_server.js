@@ -44,8 +44,15 @@ function urlsForUser(id) {
 
 //GET CALLS
 app.get("/login", (req, res) => {
-  let templateVars = {user: users[req.session.user_id]};
-  res.render('login', templateVars);
+  const userId = req.session.user_id;
+  const user = users[userId];
+  if (user) {
+    return res.redirect("/urls");
+  }
+  const templateVars = {
+    user
+  };
+  res.render("login", templateVars);
 })
 
 app.get("/register", (req, res) => {
