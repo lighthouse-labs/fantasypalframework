@@ -49,13 +49,27 @@ app.get("/login", (req, res) => {
 })
 
 app.get("/register", (req, res) => {
-  let templateVars = {user: users[req.session.user_id]};
+  const userId = req.session.user_id;
+  const user = users[userId];
+  if (user) {
+    return res.redirect("/urls");
+  }
+  const templateVars = {
+    user
+  };
   res.render('user-registration', templateVars);
 })
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userID = req.session.user_id;
+  const user = users[userID]
+  if (user) {
+    res.redirect("/urls");
+  }
+  if (!user) {
+    return res.redirect('/login');
+  }
 });
 
 app.get("/hello", (req, res) => {
