@@ -7,4 +7,23 @@ const emailCheck = function(email, users) {
   return undefined;
 }
 
-module.exports = {emailCheck}
+function generateRandomString() {
+  let r = (Math.random().toString(36).substring(7))
+return r;
+}
+
+
+
+function urlsForUser(id) {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+      }
+  }
+  return userUrls;
+}
+
+module.exports = {emailCheck};
+module.exports = {generateRandomString};
+module.exports = {urlsForUser};
