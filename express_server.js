@@ -107,24 +107,34 @@ app.get("/urls/new", (req, res) => {
 //get request with for loop that checks for past urls.. Error code if the URL does not exist.
 app.get("/urls/:id", (req, res) => {
   let urlsForID = {};
+  let shortURL = req.params.id;
   for (let user in urlDatabase) {     
     if (urlDatabase[user].userID === req.session.user_id) {       
       urlsForID[user] = urlDatabase[user];    
     }
   }
-  for (let shortUrl in urlsForID) {
-    if (req.params.id == shortUrl) {
-      let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.user_id]};
-      res.render("urls_show", templateVars);
-      return
-    }
+  // for (let shortUrl in urlsForID) {
+  //   if (req.params.id == shortUrl) {
+  //     let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.user_id]};
+  //     res.render("urls_show", templateVars);
+  //     return
+  if (urlDatabase[shortURL]) {
+    const templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL].longURL, user: users[req.session["userID"]]};
+    res.render("urls_show", templateVars);
   }
   res.send("URL does not exist!")
   return
 });
 
-app.get("/u/:id", (req, res) => {
-  res.redirect(urlDatabase[req.params.id].longURL);
+app.get('/u/:id', (req, res) => {
+  const shortURL = req.params.id;
+  if (urlDatabase[shortURL]) {
+    res.redirect(urlDatabase[shortURL].longURL);
+  } else if (!req.session["userID"]) {
+    res.status(404).send("<a href='/login'>URL not found.</a>");
+  } else {
+    res.status(404).send("<a href='/urls'>URL not found.</a>");
+  }
 });
 
 //POST CALLS
@@ -165,21 +175,20 @@ app.post('/urls/:id/delete', (req, res) => {
 
 // Post request that requires a login to access urls
 app.post("/urls/:id", (req, res) => {
-  const userId = req.session.user_id;
   const shortURL = req.params.id;
-  const longURL = req.body.newLongURL;
-  const user = users[userId];
+  const longURL = req.body.longURL;
+  const user = req.session.user_id;
 
   if (!user) {
     return res.status(401).send("Please login!");
   }
-  const userDB = urlsForUser(userId, urlDatabase);
+  const userDB = urlsForUser(user, urlDatabase);
   if (!userDB[shortURL]) {
     return res.status(401).send("Access Denied!");
+  } else {
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect("/urls");
   }
-
-  urlDatabase[shortURL].longURL = longURL;
-  res.redirect("/urls");
 });
 
 
