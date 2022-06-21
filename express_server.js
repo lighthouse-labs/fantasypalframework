@@ -69,7 +69,7 @@ app.get("/", (req, res) => {
     res.redirect("/urls");
   }
   if (!user) {
-    return res.redirect('/login');
+    return res.redirect('/login'); 
   }
 });
 
