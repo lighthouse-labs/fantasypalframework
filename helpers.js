@@ -78,6 +78,9 @@ const scheduleComparison = (arr1, arr2, date) => {
   return sameDays.length;  // Return the number of same days played on in sameDays 
 }  
 
+console.log(scheduleComparison(TMLsched, MTLsched, 220101))
+
+
 module.exports = scheduleComparison
 
 
