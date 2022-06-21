@@ -16,10 +16,10 @@
 
   <main style="margin: 1em;">
 
-    <h3 style="color: white">Create Matchups</h3>
+    <h3 style="font-size: 40px; color: white">Create Matchups</h3>
     <form class="form-inline" action="/urls" method="POST" style="padding: 2em; justify-content: center;">
       <div class="form-group mb-2">
-        <label style="color: white" for="longURL">Select Teams:</label>
+        <label style="color: black; font-size: 40px;" for="longURL"><strong>Select Teams:</strong></label>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
@@ -101,8 +101,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">Date</label>
-          <input type="password" class="form-control" placeholder="YY/MM/DD">
+          <label style="color: black; font-size: 40px" for="exampleInputPassword1"><strong>Date:</strong></label>
+          <input type="datetime" class="form-control" placeholder="YY/MM/DD">
         </div>
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
