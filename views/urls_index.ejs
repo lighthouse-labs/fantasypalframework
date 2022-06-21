@@ -16,14 +16,14 @@
   <%- include ('partials/_header.ejs') %>
 
     <main style="margin: 1em;">
-      <h3>My Matchups</h3>
+      <h3 style="color: white">My Matchups</h3>
       <% if (user) { %>
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">Teams</th>
-              <th scope="col">Date</th>
-              <th scope="col">Coinciding Dates</th>
+              <th style="color: white" scope="col">Teams</th>
+              <th style="color: white" scope="col">Date</th>
+              <th style="color: white" scope="col">Coinciding Dates</th>
 
             </tr>
           </thead>
@@ -94,6 +94,15 @@
       </ul>
     </footer>
   </div>
+  <style>
+  body {
+    background-image: url("https://www.vmcdn.ca/f/files/via/images/ice-hockey-arena.jpg;w=960");
+    background-repeat: no-repeat;
+    background-size: cover
+}
+</style>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
 </body>
 </html>

@@ -1,27 +1,27 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark" style="background-color:rgb(39, 25, 150)">
-    <a class="navbar-brand" href="/urls" style="font-family: 'Helvetica', cursive; font-size: 40px; padding-top: 0px;">FantasyPal</a>
+    <a class="navbar-brand" href="/urls" style="font-family: 'Helvetica', cursive; color:rgb(255, 255, 255); font-size: 40px; padding-top: 0px;">FantasyPal</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">Matchups</a>
-        <a class="nav-item nav-link" href="/urls/new">My Teams</a>
+        <a class="nav-item nav-link" href="/urls">My Matchups</a>
+        <a class="nav-item nav-link" href="/urls/new">Compare Schedules</a>
       </div>
     </div>
     <% if (user) { %>
       <form class="form-inline" action="/logout" method="POST" style="padding-top: 0px">
         <span style="color: white"> <%= user.email %> </span>
-        <button type="submit" class="btn btn-outline-success" style="margin-left: 1em">Logout</button>
+        <button type="submit" class="btn btn-outline-danger" style="margin-left: 1em">Logout</button>
       </form>
       <%} else { %>
         <form class="form-inline" action="/login">
-          <button type="submit" class="btn btn-outline-light" style="margin-right: 2em;">Login</button>
+          <button type="submit" class="btn btn-outline-success" style="margin-right: 2em;">Login</button>
         </form>
         <form class="form-inline" action="/register">
-          <button type="submit" class="btn btn-outline-light">Register</button>
+          <button type="submit" class="btn btn-outline-success">Register</button>
         </form>
         <% } %>
       </nav>

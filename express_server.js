@@ -4,12 +4,22 @@ const bcrypt =require("bcryptjs");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const { generateRandomString, emailCheck, urlsForUser } = require('./helpers');
+// const sassMiddleware = require("./lib/sass-middleware");
 
 
 
 //server info
 const app = express();
 const PORT = 8080; // default port 8080
+
+// app.use(
+//   "/styles",
+//   sassMiddleware({
+//     source: __dirname + "/styles",
+//     destination: __dirname + "/public/styles",
+//     isSass: false, // false => scss, true => sass
+//   })
+// );
 
 //Some consts
 const urlDatabase = {};
