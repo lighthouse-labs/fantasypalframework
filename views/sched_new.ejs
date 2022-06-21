@@ -9,17 +9,18 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-  <title>New URL - TinyApp Example</title>
+  <title>Create a new Matchup</title>
 </head>
 
 <%- include ('partials/_header.ejs') %>
 
   <main style="margin: 1em;">
 
-    <h3 style="color: white">Create Matchups</h3>
+    <h3 style="font-size: 40px; color: white">Create Matchups</h3>
     <form class="form-inline" action="/urls" method="POST" style="padding: 2em; justify-content: center;">
       <div class="form-group mb-2">
-        <label style="color: white" for="longURL">Select Teams:</label>
+        <label style="color: white; font-size: 40px; padding-right: 1em;" for="longURL"><strong>Select
+            Teams:</strong></label>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
@@ -60,7 +61,7 @@
             <a class="dropdown-item" href="#">Winnipeg Jets</a>
           </div>
         </div>
-        <div class="dropdown">
+        <div class="dropdown px-5">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             Team 2
@@ -101,8 +102,9 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">Date</label>
-          <input type="password" class="form-control" placeholder="YY/MM/DD">
+          <label style="color: #f9f6f6; font-size: 40px; padding-right: 1em;"
+            for="exampleInputPassword1"><strong>Date:</strong></label>
+          <input type="datetime" class="form-control" placeholder="YY/MM/DD">
         </div>
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
@@ -158,8 +160,10 @@
     crossorigin="anonymous"></script>
   </body>
   <style>
-
   </style>
+  </style>
+
+
 
 </html>
 

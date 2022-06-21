@@ -16,34 +16,34 @@
   <%- include ('partials/_header.ejs') %>
 
     <main style="margin: 1em;">
-      <h3 style="color: white">My Matchups</h3>
+      <h3 style="font-size: 40px; color: white">My Matchups</h3>
       <% if (user) { %>
         <table class="table">
           <thead>
             <tr>
-              <th style="color: white" scope="col">Teams</th>
-              <th style="color: white" scope="col">Date</th>
-              <th style="color: white" scope="col">Coinciding Dates</th>
+              <th style="color: black; font-size: 30px;" scope="col">Teams</th>
+              <th style="color: black; font-size: 30px;" scope="col">Date-Searched</th>
+              <th style="color: black; font-size: 30px;" scope="col">Coinciding Days Played</th>
 
             </tr>
           </thead>
           <tbody>
-            <% for(let url in urls) { %>
+            <% for(let sched in scheds) { %>
               <tr>
                 <td>
-                  <%= url %>
+                  <%= sched %>
                 </td>
                 <td>
-                  <%= urls[url].longURL %>
+                  <%= scheds[sched].longsched %>
                 </td>
                 <td>
-                  <form method="POST" action="/urls/<%= url %>/delete">
+                  <form method="POST" action="/scheds/<%= sched %>/delete">
                     <button type="submit" style="border-color: red; background-color: white; color: red;"
                       class="btn btn-primary">Delete</button>
                   </form>
                 </td>
                 <td>
-                  <form method="GET" action="/urls/<%= url %>">
+                  <form method="GET" action="/scheds/<%= sched %>">
                     <button type="submit" style="border-color: blue; background-color: white; color: blue;"
                       class="btn btn-primary">Edit</button>
                   </form>
