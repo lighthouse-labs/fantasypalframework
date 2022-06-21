@@ -3,7 +3,7 @@ const express = require("express");
 const bcrypt =require("bcryptjs");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
-const { generateRandomString, emailCheck, urlsForUser } = require('./helpers');
+const { generateRandomString, emailCheck, schedForUser } = require('./helpers');
 // const sassMiddleware = require("./lib/sass-middleware");
 
 
@@ -22,7 +22,7 @@ const PORT = 8080; // default port 8080
 // );
 
 //Some consts
-const urlDatabase = {};
+const schedDatabase = {};
 const users = {
   "userID": {
     id: "userRandomID",
@@ -45,12 +45,12 @@ app.set("view engine", "ejs");
 
 //GET CALLS
 
-//get call for login, once logged in redirect to urls page.
+//get call for login, once logged in redirect to My Matchups page.
 app.get("/login", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
-    return res.redirect("/urls");
+    return res.redirect("/scheds");
   }
   const templateVars = {
     user
@@ -58,12 +58,12 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 })
 
-//get call for registration. redirects to urls
+//get call for registration. redirects to My Matchups page
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
-    return res.redirect("/urls");
+    return res.redirect("/scheds");
   }
   const templateVars = {
     user
@@ -76,74 +76,70 @@ app.get("/", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID]
   if (user) {
-    res.redirect("/urls");
+    res.redirect("/scheds");
   }
   if (!user) {
     return res.redirect('/login'); 
   }
 });
 
-// error code for user that isnt logged in trying to access urls.. 
-app.get("/urls", (req, res) => {
+// error code for user that isnt logged in trying to access Matchups.. 
+app.get("/scheds", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
 
   if (!user) {
     return res.status(401).send("Please login");
   }
-  const userDB = urlsForUser(userId, urlDatabase);
+  const userDB = schedForUser(userId, schedDatabase);
   const templateVars = {
     user,
-    urls: userDB
+    scheds: userDB
   };
 
-  res.render("urls_index", templateVars);
+  res.render("sched_index", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.send(urlDatabase);
+app.get("/scheds.json", (req, res) => {
+  res.send(schedDatabase);
 })
 
 //get request for new user
-app.get("/urls/new", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.session.user_id] };
+app.get("/scheds/new", (req, res) => {
+  let templateVars = { scheds: schedDatabase, user: users[req.session.user_id] };
   if (!req.session.user_id) {
     res.redirect('/login');
   } else {
-  res.render('urls_new', templateVars);
+  res.render('sched_new', templateVars);
   }
 });
 
-//get request with for loop that checks for past urls.. Error code if the URL does not exist.
-app.get("/urls/:id", (req, res) => {
-  let urlsForID = {};
-  let shortURL = req.params.id;
-  for (let user in urlDatabase) {     
-    if (urlDatabase[user].userID === req.session.user_id) {       
-      urlsForID[user] = urlDatabase[user];    
+//get request with for loop that checks for past matchups.. Error code if the matchup does not exist.
+app.get("/scheds/:id", (req, res) => {
+  let schedForID = {};
+  let shortsched = req.params.id;
+  for (let user in schedDatabase) {     
+    if (schedDatabase[user].userID === req.session.user_id) {       
+      schedForID[user] = schedDatabase[user];    
     }
   }
-  // for (let shortUrl in urlsForID) {
-  //   if (req.params.id == shortUrl) {
-  //     let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.user_id]};
-  //     res.render("urls_show", templateVars);
-  //     return
-  if (urlDatabase[shortURL]) {
-    const templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL].longURL, user: users[req.session["userID"]]};
-    res.render("urls_show", templateVars);
+ 
+  if (schedDatabase[shortsched]) {
+    const templateVars = {shortsched: shortsched, longsched: schedDatabase[shortsched].longsched, user: users[req.session["userID"]]};
+    res.render("sched_show", templateVars);
   }
-  res.send("URL does not exist!")
+  res.send("matchup does not exist!")
   return
 });
 
 app.get('/u/:id', (req, res) => {
-  const shortURL = req.params.id;
-  if (urlDatabase[shortURL]) {
-    res.redirect(urlDatabase[shortURL].longURL);
+  const shortsched = req.params.id;
+  if (schedDatabase[shortsched]) {
+    res.redirect(schedDatabase[shortsched].longsched);
   } else if (!req.session["userID"]) {
-    res.status(404).send("<a href='/login'>URL not found.</a>");
+    res.status(404).send("<a href='/login'>sched not found.</a>");
   } else {
-    res.status(404).send("<a href='/urls'>URL not found.</a>");
+    res.status(404).send("<a href='/scheds'>sched not found.</a>");
   }
 });
 
@@ -163,7 +159,7 @@ app.post("/register", (req, res) => {
   }
   req.session.user_id = userID;
   
-  res.redirect('/urls')
+  res.redirect('/scheds')
     } else {
       res.statusCode = 400;
       res.send('<h2>400 Email already exists. Please try again.</h2>')
@@ -174,30 +170,30 @@ app.post("/register", (req, res) => {
   } 
 });
 
-// Delete a URL in MyUrls
-app.post('/urls/:id/delete', (req, res) => {
-  const shortURL = req.params.id;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
-    delete urlDatabase[shortURL];
+// Delete a Matchup in My Matchups
+app.post('/scheds/:id/delete', (req, res) => {
+  const shortsched = req.params.id;
+  if (req.session.user_id === schedDatabase[shortsched].userID) {
+    delete schedDatabase[shortsched];
   }
-  res.redirect('/urls');
+  res.redirect('/scheds');
 });
 
-// Post request that requires a login to access urls
-app.post("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
-  const longURL = req.body.longURL;
+// Post request that requires a login to access Matchups
+app.post("/scheds/:id", (req, res) => {
+  const shortsched = req.params.id;
+  const longsched = req.body.longsched;
   const user = req.session.user_id;
 
   if (!user) {
     return res.status(401).send("Please login!");
   }
-  const userDB = urlsForUser(user, urlDatabase);
-  if (!userDB[shortURL]) {
+  const userDB = schedForUser(user, schedDatabase);
+  if (!userDB[shortsched]) {
     return res.status(401).send("Access Denied!");
   } else {
-    urlDatabase[shortURL].longURL = longURL;
-    res.redirect("/urls");
+    schedDatabase[shortsched].longsched = longsched;
+    res.redirect("/scheds");
   }
 });
 
@@ -218,7 +214,7 @@ app.post("/login", (req,res) => {
       return res.send('<h2>403 You entered the wrong password, please try again.</h2>')
     } else {
       req.session.user_id = userID;
-      res.redirect("/urls")
+      res.redirect("/scheds")
     }
   }
 });
@@ -230,14 +226,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 })
 
-//post function that calls generate random string to creat the tinyURL
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL,
+//post function that calls generate random string to creat the Matchups
+app.post("/scheds", (req, res) => {
+  const shortsched = generateRandomString();
+  schedDatabase[shortsched] = {
+    longsched: req.body.longsched,
     userID: req.session.user_id
   }
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/scheds/${shortsched}`);
 });
 
 //Listen call

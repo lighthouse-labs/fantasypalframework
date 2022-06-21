@@ -15,14 +15,14 @@ return r;
 
 
 
-function urlsForUser(id, urlDatabase) {
-  const userUrls = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userUrls[shortURL] = urlDatabase[shortURL];
+function schedForUser(id, schedDatabase) {
+  const userSched = {};
+  for (const shortSched in schedDatabase) {
+    if (schedDatabase[shortSched].userID === id) {
+      userSched[shortSched] = schedDatabase[shortSched];
       }
   }
-  return userUrls;
+  return userSched;
 }
 
 const ANAsched = require('./db/ANAsched')
@@ -84,4 +84,4 @@ console.log(scheduleComparison(TMLsched, MTLsched, 220101))
 module.exports = scheduleComparison
 
 
-module.exports = { emailCheck, generateRandomString, urlsForUser }
+module.exports = { emailCheck, generateRandomString, schedForUser }
